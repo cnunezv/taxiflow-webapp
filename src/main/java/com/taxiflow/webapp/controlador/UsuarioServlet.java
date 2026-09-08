@@ -1,11 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package com.taxiflow.webapp.controlador;
 
+import com.taxiflow.webapp.dao.UsuarioDAO;
+import com.taxiflow.webapp.modelo.Usuario;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -13,75 +11,76 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- *
- * @author CarlosN
+ * Servlet controlador para el CRUD de Usuario.
+ * Recibe el parámetro 'accion' desde los formularios JSP y decide
+ * qué operación del UsuarioDAO invocar.
  */
 @WebServlet(name = "UsuarioServlet", urlPatterns = {"/usuarios"})
 public class UsuarioServlet extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+    private final UsuarioDAO dao = new UsuarioDAO();
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet UsuarioServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet UsuarioServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+        String accion = request.getParameter("accion");
+        String ctx = request.getContextPath();
+
+        try {
+            if ("agregar".equals(accion)) {
+                Usuario u = new Usuario();
+                u.setId(request.getParameter("id"));
+                u.setPassword(request.getParameter("password"));
+                u.setNombre(request.getParameter("nombre"));
+                u.setApellido(request.getParameter("apellido"));
+                u.setEmail(request.getParameter("email"));
+                u.setTipo(request.getParameter("tipo"));
+                dao.agregar(u);
+                response.sendRedirect(ctx + "/web/usuario/agregar.jsp?mensaje=Usuario agregado correctamente");
+
+            } else if ("modificar".equals(accion)) {
+                Usuario u = new Usuario();
+                u.setId(request.getParameter("id"));
+                u.setPassword(request.getParameter("password"));
+                u.setNombre(request.getParameter("nombre"));
+                u.setApellido(request.getParameter("apellido"));
+                u.setEmail(request.getParameter("email"));
+                u.setTipo(request.getParameter("tipo"));
+                dao.modificar(u);
+                response.sendRedirect(ctx + "/web/usuario/modificar.jsp?mensaje=Usuario modificado correctamente");
+
+            } else if ("eliminar".equals(accion)) {
+                dao.eliminar(request.getParameter("id"));
+                response.sendRedirect(ctx + "/web/usuario/eliminar.jsp?mensaje=Usuario eliminado correctamente");
+
+            } else if ("buscar".equals(accion)) {
+                Usuario u = dao.consultar(request.getParameter("id"));
+                request.getSession().setAttribute("usuario.buscar", u);
+                String redir = request.getParameter("redir"); // a qué JSP volver: buscar/modificar/eliminar
+                response.sendRedirect(ctx + "/web/usuario/" + redir + ".jsp");
+
+            } else if ("listartodo".equals(accion)) {
+                List<Usuario> lista = dao.listarTodos();
+                request.getSession().setAttribute("usuario.listar", lista);
+                response.sendRedirect(ctx + "/web/usuario/listar.jsp");
+
+            } else {
+                response.sendRedirect(ctx + "/index.jsp");
+            }
+        } catch (Exception e) {
+            response.sendRedirect(ctx + "/web/mensaje.jsp?mensaje=" + e.getMessage());
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
 }

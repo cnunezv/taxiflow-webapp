@@ -8,4 +8,9 @@
             30
         </session-timeout>
     </session-config>
+
+    <!-- Página que se carga por defecto al entrar a la raíz de la app -->
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
 </web-app>
