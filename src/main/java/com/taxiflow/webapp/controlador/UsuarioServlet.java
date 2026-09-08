@@ -22,12 +22,16 @@ public class UsuarioServlet extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        request.setCharacterEncoding("UTF-8"); // <-- evita el problema de la ñ/tildes
         response.setContentType("text/html;charset=UTF-8");
+
         String accion = request.getParameter("accion");
         String ctx = request.getContextPath();
 
         try {
             if ("agregar".equals(accion)) {
+                // Alta: aquí el id SÍ se pide porque lo escribe la persona (no es autogenerado)
                 Usuario u = new Usuario();
                 u.setId(request.getParameter("id"));
                 u.setPassword(request.getParameter("password"));
@@ -54,6 +58,7 @@ public class UsuarioServlet extends HttpServlet {
                 response.sendRedirect(ctx + "/web/usuario/eliminar.jsp?mensaje=Usuario eliminado correctamente");
 
             } else if ("buscar".equals(accion)) {
+                // Busca por id y guarda en SESIÓN, porque el sendRedirect pierde los atributos del request
                 Usuario u = dao.consultar(request.getParameter("id"));
                 request.getSession().setAttribute("usuario.buscar", u);
                 String redir = request.getParameter("redir"); // a qué JSP volver: buscar/modificar/eliminar

@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class CarreraTaxiDAO {
 
-    /** Inserta una nueva carrera de taxi. */
+    /** Inserta una nueva carrera de taxi. El id lo genera la BD automáticamente. */
     public void agregar(CarreraTaxi c) throws Exception {
         String sql = "INSERT INTO carreras_taxi (cliente, taxi, kilometros, barrioInicio, "
                 + "barrioLlegada, cantidadPasajeros, taxista, precio, duracionMinutos) "
@@ -31,7 +31,7 @@ public class CarreraTaxiDAO {
             st.setInt(9, c.getDuracionMinutos());
             bd.actualizar(st);
         } finally {
-            bd.desconectar();
+            bd.desconectar(); // se cierra la conexión pase lo que pase
         }
     }
 
@@ -72,7 +72,7 @@ public class CarreraTaxiDAO {
         }
     }
 
-    /** Busca una carrera por su id. */
+    /** Busca una carrera por su id. Devuelve null si no existe. */
     public CarreraTaxi consultar(int id) throws Exception {
         String sql = "SELECT * FROM carreras_taxi WHERE id=?";
         ConexionBD bd = new ConexionBD();
@@ -129,7 +129,6 @@ public class CarreraTaxiDAO {
 
     /**
      * Reporte parametrizado 2: carreras con precio mayor o igual a un valor mínimo.
-     * Útil por ejemplo para ver "carreras costosas".
      */
     public List<CarreraTaxi> reportePorPrecioMinimo(double precioMinimo) throws Exception {
         String sql = "SELECT * FROM carreras_taxi WHERE precio >= ? ORDER BY precio DESC";

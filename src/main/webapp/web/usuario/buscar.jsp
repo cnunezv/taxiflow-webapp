@@ -4,14 +4,39 @@
     Author     : CarlosN
 --%>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="com.taxiflow.webapp.modelo.Usuario" %>
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
-    </head>
-    <body>
-        <h1>Hello World!</h1>
-    </body>
+<head><title>Buscar Usuario</title></head>
+<body>
+    <h2>Buscar Usuario por ID</h2>
+
+    <form action="${pageContext.request.contextPath}/usuarios" method="get">
+        <input type="hidden" name="accion" value="buscar" />
+        <input type="hidden" name="redir" value="buscar" />
+        ID: <input type="text" name="id" required />
+        <button type="submit">Buscar</button>
+    </form>
+
+    <hr/>
+
+    <%
+        Usuario u = (Usuario) session.getAttribute("usuario.buscar");
+        if (u != null) {
+    %>
+        <table border="1" cellpadding="5">
+            <tr><th>ID</th><th>Nombre</th><th>Apellido</th><th>Email</th><th>Tipo</th></tr>
+            <tr>
+                <td><%= u.getId() %></td>
+                <td><%= u.getNombre() %></td>
+                <td><%= u.getApellido() %></td>
+                <td><%= u.getEmail() %></td>
+                <td><%= u.getTipo() %></td>
+            </tr>
+        </table>
+    <% } %>
+
+    <p><a href="${pageContext.request.contextPath}/usuarios?accion=listartodo">Volver al listado</a></p>
+</body>
 </html>
