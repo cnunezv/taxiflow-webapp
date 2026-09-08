@@ -7,8 +7,8 @@ import java.sql.SQLException;
 public class ConexionBD {
 
     private static final String URL = "jdbc:mysql://localhost:3306/taxiflow_bd";
-    private static final String USUARIO = "canva";
-    private static final String CLAVE = "1204";
+    private static final String USUARIO = "root";
+    private static final String CLAVE = "";
 
     public static Connection obtenerConexion() throws SQLException {
         try {
@@ -16,6 +16,7 @@ public class ConexionBD {
         } catch (ClassNotFoundException e) {
             throw new SQLException("Driver de MySQL no encontrado", e);
         }
+
         return DriverManager.getConnection(URL, USUARIO, CLAVE);
     }
 }
