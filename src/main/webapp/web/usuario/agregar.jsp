@@ -36,3 +36,32 @@
                 </tr>
                 <tr>
                     <th style="text-align: right">Email:</th>
+                    <td><input type="email" name="email" required/></td>
+                </tr>
+                <tr>
+                    <th style="text-align: right">Tipo:</th>
+                    <td>
+                        <select name="tipo">
+                            <option value="Cliente">Cliente</option>
+                            <option value="Taxista">Taxista</option>
+                            <option value="Administrador">Administrador</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <td>
+                        <input type="submit" value="Guardar"/>
+                        <input type="reset" value="Limpiar"/>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <hr/>
+        <p style="color:green">
+            <%= request.getParameter("mensaje") != null ? request.getParameter("mensaje") : "" %>
+        </p>
+        <a href="${pageContext.request.contextPath}/usuarios?accion=listartodo">Cancelar</a>
+    </center>
+</body>
+</html>

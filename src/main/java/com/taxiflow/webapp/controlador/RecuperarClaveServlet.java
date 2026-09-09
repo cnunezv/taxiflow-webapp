@@ -1,11 +1,11 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package com.taxiflow.webapp.controlador;
 
+import com.taxiflow.webapp.dao.UsuarioDAO;
+import com.taxiflow.webapp.modelo.Usuario;
+import com.taxiflow.webapp.util.EnvioCorreo;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -13,75 +13,50 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- *
- * @author CarlosN
+ * Servlet que envía por correo la contraseña actual del usuario
+ * cuando este la ha olvidado (recordatorio de clave).
  */
 @WebServlet(name = "RecuperarClaveServlet", urlPatterns = {"/recuperar-clave"})
 public class RecuperarClaveServlet extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet RecuperarClaveServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet RecuperarClaveServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        // Muestra el formulario donde el usuario escribe su email
+        request.getRequestDispatcher("/web/usuario/recuperarClave.jsp").forward(request, response);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        request.setCharacterEncoding("UTF-8");
+        String ctx = request.getContextPath();
+        String email = request.getParameter("email");
+
+        try {
+            UsuarioDAO dao = new UsuarioDAO();
+            Usuario usuario = dao.consultarPorEmail(email);
+
+            if (usuario == null) {
+                response.sendRedirect(ctx + "/recuperar-clave?mensaje="
+                        + URLEncoder.encode("No existe ningún usuario registrado con ese email", StandardCharsets.UTF_8));
+                return;
+            }
+
+            // Envía la contraseña actual por correo (recordatorio de clave)
+            String asunto = "TaxiFlow - Recordatorio de contraseña";
+            String cuerpo = "Hola" + usuario.getNombre() + ", gran pendejo,\n\n"
+                    + "Tu contraseña actual en TaxiFlow es: " + usuario.getPassword() + "\n\n"
+                    + "Si no solicitaste este correo, ignóralo.";
+
+            EnvioCorreo.enviarCorreo(usuario.getEmail(), asunto, cuerpo);
+
+            response.sendRedirect(ctx + "/web/usuario/login.jsp?mensaje="
+                    + URLEncoder.encode("Te enviamos tu contraseña al correo registrado", StandardCharsets.UTF_8));
+
+        } catch (Exception e) {
+            response.sendRedirect(ctx + "/recuperar-clave?mensaje="
+                    + URLEncoder.encode("Error al enviar el correo: " + e.getMessage(), StandardCharsets.UTF_8));
+        }
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
 }
