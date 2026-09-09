@@ -21,11 +21,11 @@
             <h2>Menú de TaxiFlow</h2>
             <hr/>
             <table border="0">
-                <tr><td><a href="web/usuario/agregar.jsp">Agregar Usuario</a></td></tr>
-                <tr><td><a href="web/usuario/listar.jsp">Listar Usuarios</a></td></tr>
-                <tr><td><a href="web/carreraTaxi/agregar.jsp">Agregar Carrera</a></td></tr>
-                <tr><td><a href="web/carreraTaxi/listar.jsp">Listar Carreras</a></td></tr>
-                <tr><td><a href="UsuarioServlet?accion=logout">Salir</a></td></tr>
+                <tr><td><a href="${pageContext.request.contextPath}/web/usuario/agregar.jsp">Agregar Usuario</a></td></tr>
+<tr><td><a href="${pageContext.request.contextPath}/usuarios?accion=listartodo">Listar Usuarios</a></td></tr>
+<tr><td><a href="${pageContext.request.contextPath}/CarreraTaxiServlet?accion=nueva">Agregar Carrera</a></td></tr>
+<tr><td><a href="${pageContext.request.contextPath}/CarreraTaxiServlet?accion=listar">Listar Carreras</a></td></tr>
+<tr><td><a href="${pageContext.request.contextPath}/login?accion=logout">Salir</a></td></tr>
             </table>
             <hr/>
         </center>
