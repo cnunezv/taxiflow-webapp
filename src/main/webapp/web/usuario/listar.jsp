@@ -10,11 +10,12 @@
 <html>
 <head><title>Usuarios</title></head>
 <body>
+<center>
     <h2>Listado de Usuarios</h2>
 
     <a href="${pageContext.request.contextPath}/web/usuario/agregar.jsp">+ Nuevo usuario</a> |
-    <a href="${pageContext.request.contextPath}/web/usuario/buscar.jsp">Buscar por ID</a>
-
+    <a href="${pageContext.request.contextPath}/web/usuario/buscar.jsp">Buscar por ID</a> |
+<a href="${pageContext.request.contextPath}/index.jsp">Volver al menú</a>
     <table border="1" cellpadding="5">
         <tr>
             <th>ID</th><th>Nombre</th><th>Apellido</th><th>Email</th><th>Tipo</th><th>Acciones</th>
@@ -34,9 +35,10 @@
             <td>
                 <a href="${pageContext.request.contextPath}/usuarios?accion=buscar&id=<%= u.getId() %>&redir=modificar">Editar</a> |
                 <a href="${pageContext.request.contextPath}/usuarios?accion=buscar&id=<%= u.getId() %>&redir=eliminar">Eliminar</a>
-            </td>
+                 </td>
         </tr>
         <% } } %>
     </table>
+    <center>
 </body>
 </html>

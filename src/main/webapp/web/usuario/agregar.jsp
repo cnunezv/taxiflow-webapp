@@ -62,6 +62,8 @@
             <%= request.getParameter("mensaje") != null ? request.getParameter("mensaje") : "" %>
         </p>
         <a href="${pageContext.request.contextPath}/usuarios?accion=listartodo">Cancelar</a>
+        &nbsp;|&nbsp;
+<a href="${pageContext.request.contextPath}/index.jsp">Volver al menú</a>
     </center>
 </body>
 </html>

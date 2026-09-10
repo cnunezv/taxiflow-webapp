@@ -10,6 +10,7 @@
 <html>
 <head><title>Buscar Usuario</title></head>
 <body>
+<center>
     <h2>Buscar Usuario por ID</h2>
 
     <form action="${pageContext.request.contextPath}/usuarios" method="get">
@@ -38,5 +39,6 @@
     <% } %>
 
     <p><a href="${pageContext.request.contextPath}/usuarios?accion=listartodo">Volver al listado</a></p>
+    <center>
 </body>
 </html>

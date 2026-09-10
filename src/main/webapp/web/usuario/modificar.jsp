@@ -10,6 +10,7 @@
 <html>
 <head><title>Editar Usuario</title></head>
 <body>
+<center>
     <%
         Usuario u = (Usuario) session.getAttribute("usuario.buscar");
     %>
@@ -40,5 +41,6 @@
             <a href="${pageContext.request.contextPath}/usuarios?accion=listartodo">Cancelar</a>
         </form>
     <% } %>
+<center>
 </body>
 </html>

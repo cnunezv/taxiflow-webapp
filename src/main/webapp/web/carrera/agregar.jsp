@@ -85,10 +85,12 @@
                 </table>
             </form>
             <hr/>
-            <p style="color:#FF0000;">
-                <%= (mensaje != null && !mensaje.isEmpty()) ? mensaje : "" %>
-            </p>
-            <a href="${pageContext.request.contextPath}/CarreraTaxiServlet?accion=listar">Volver al listado</a>
+<p style="color:#FF0000;">
+    <%= (mensaje != null && !mensaje.isEmpty()) ? mensaje : "" %>
+</p>
+<a href="${pageContext.request.contextPath}/CarreraTaxiServlet?accion=listar">Volver al listado</a>
+&nbsp;|&nbsp;
+<a href="${pageContext.request.contextPath}/index.jsp">Volver al menú</a>
         </center>
     </body>
 </html>
