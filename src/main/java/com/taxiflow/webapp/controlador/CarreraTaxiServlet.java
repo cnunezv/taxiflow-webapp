@@ -20,6 +20,13 @@ public class CarreraTaxiServlet extends HttpServlet {
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
+
+        // Control de acceso: ninguna operacion sobre carreras sin sesion iniciada.
+        if (request.getSession().getAttribute("usuario.login") == null) {
+            response.sendRedirect(request.getContextPath() + "/web/usuario/login.jsp?mensaje=Inicia sesion para continuar");
+            return;
+        }
+
         String accion = request.getParameter("accion");
         if (accion == null) accion = "listar";
 
@@ -107,6 +114,13 @@ public class CarreraTaxiServlet extends HttpServlet {
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
+
+        // Control de acceso: ninguna operacion sobre carreras sin sesion iniciada.
+        if (request.getSession().getAttribute("usuario.login") == null) {
+            response.sendRedirect(request.getContextPath() + "/web/usuario/login.jsp?mensaje=Inicia sesion para continuar");
+            return;
+        }
+
         String ctx = request.getContextPath();
         CarreraTaxiDAO dao = new CarreraTaxiDAO();
 

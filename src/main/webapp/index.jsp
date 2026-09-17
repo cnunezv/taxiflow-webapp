@@ -8,6 +8,7 @@
     // Si no hay usuario logueado en la sesión, se redirige a la página de login.
     if (session.getAttribute("usuario.login") == null) {
         getServletContext().getRequestDispatcher("/web/usuario/login.jsp").forward(request, response);
+        return;
     }
 %>
 <!DOCTYPE html>
@@ -25,6 +26,8 @@
 <tr><td><a href="${pageContext.request.contextPath}/usuarios?accion=listartodo">Listar Usuarios</a></td></tr>
 <tr><td><a href="${pageContext.request.contextPath}/CarreraTaxiServlet?accion=nueva">Agregar Carrera</a></td></tr>
 <tr><td><a href="${pageContext.request.contextPath}/CarreraTaxiServlet?accion=listar">Listar Carreras</a></td></tr>
+<tr><td><a href="${pageContext.request.contextPath}/usuarios?accion=reportes">Reportes de Usuarios</a></td></tr>
+<tr><td><a href="${pageContext.request.contextPath}/CarreraTaxiServlet?accion=buscar">Reportes de Carreras</a></td></tr>
 <tr><td><a href="${pageContext.request.contextPath}/login?accion=logout">Salir</a></td></tr>
             </table>
             <hr/>

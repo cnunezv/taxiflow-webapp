@@ -132,6 +132,50 @@ public class UsuarioDAO {
     }
 
     /**
+     * Reporte parametrizado 1 (Usuario): lista los usuarios que pertenecen a un
+     * rol/tipo determinado (Administrador, Cliente, Taxista).
+     * El parametro 'tipo' llega desde el formulario de reportes.jsp.
+     */
+    public List<Usuario> reportePorTipo(String tipo) throws Exception {
+        String sql = "SELECT * FROM usuarios WHERE tipo = ? ORDER BY nombre";
+        ConexionBD bd = new ConexionBD();
+        List<Usuario> lista = new ArrayList<>();
+        try {
+            PreparedStatement st = bd.crearSentencia(sql);
+            st.setString(1, tipo);
+            ResultSet rs = bd.consultar(st);
+            while (rs.next()) {
+                lista.add(mapearUsuario(rs));
+            }
+            return lista;
+        } finally {
+            bd.desconectar();
+        }
+    }
+
+    /**
+     * Reporte parametrizado 2 (Usuario): lista los usuarios cuyo correo pertenece
+     * a un dominio dado (por ejemplo "taxiflow.com"). Sirve para saber a que
+     * dominios se estan enviando los correos de recuperacion de clave.
+     */
+    public List<Usuario> reportePorDominioEmail(String dominio) throws Exception {
+        String sql = "SELECT * FROM usuarios WHERE email LIKE ? ORDER BY email";
+        ConexionBD bd = new ConexionBD();
+        List<Usuario> lista = new ArrayList<>();
+        try {
+            PreparedStatement st = bd.crearSentencia(sql);
+            st.setString(1, "%@" + dominio);
+            ResultSet rs = bd.consultar(st);
+            while (rs.next()) {
+                lista.add(mapearUsuario(rs));
+            }
+            return lista;
+        } finally {
+            bd.desconectar();
+        }
+    }
+
+    /**
      * Método privado de apoyo: convierte una fila del ResultSet en un objeto Usuario.
      * Evita repetir el mismo bloque de código en cada método de consulta.
      */

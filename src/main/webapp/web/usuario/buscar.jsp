@@ -6,6 +6,13 @@
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="com.taxiflow.webapp.modelo.Usuario" %>
+<%
+    // Control de acceso: si no hay sesión iniciada, se redirige al login.
+    if (session.getAttribute("usuario.login") == null) {
+        getServletContext().getRequestDispatcher("/web/usuario/login.jsp").forward(request, response);
+        return;
+    }
+%>
 <!DOCTYPE html>
 <html>
 <head><title>Buscar Usuario</title></head>

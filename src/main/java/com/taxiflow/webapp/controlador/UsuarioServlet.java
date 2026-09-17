@@ -29,6 +29,12 @@ public class UsuarioServlet extends HttpServlet {
         String accion = request.getParameter("accion");
         String ctx = request.getContextPath();
 
+        // Control de acceso: ninguna operacion sobre usuarios sin sesion iniciada.
+        if (request.getSession().getAttribute("usuario.login") == null) {
+            response.sendRedirect(ctx + "/web/usuario/login.jsp?mensaje=Inicia sesion para continuar");
+            return;
+        }
+
         try {
             if ("agregar".equals(accion)) {
                 // Alta: aquí el id SÍ se pide porque lo escribe la persona (no es autogenerado)
@@ -68,6 +74,24 @@ public class UsuarioServlet extends HttpServlet {
                 List<Usuario> lista = dao.listarTodos();
                 request.getSession().setAttribute("usuario.listar", lista);
                 response.sendRedirect(ctx + "/web/usuario/listar.jsp");
+
+            } else if ("reportes".equals(accion)) {
+                // Pantalla con los DOS reportes parametrizados de Usuario (aun sin resultados)
+                request.getRequestDispatcher("/web/usuario/reportes.jsp").forward(request, response);
+
+            } else if ("reportePorTipo".equals(accion)) {
+                // Reporte parametrizado 1: usuarios por rol/tipo
+                String tipo = request.getParameter("tipo");
+                request.setAttribute("resultados", dao.reportePorTipo(tipo));
+                request.setAttribute("criterio", "Rol / tipo de usuario: " + tipo);
+                request.getRequestDispatcher("/web/usuario/reportes.jsp").forward(request, response);
+
+            } else if ("reportePorDominio".equals(accion)) {
+                // Reporte parametrizado 2: usuarios por dominio de correo
+                String dominio = request.getParameter("dominio");
+                request.setAttribute("resultados", dao.reportePorDominioEmail(dominio));
+                request.setAttribute("criterio", "Dominio de correo: @" + dominio);
+                request.getRequestDispatcher("/web/usuario/reportes.jsp").forward(request, response);
 
             } else {
                 response.sendRedirect(ctx + "/index.jsp");

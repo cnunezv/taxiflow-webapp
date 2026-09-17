@@ -32,6 +32,21 @@ La plataforma permite gestionar usuarios, carreras, autenticación y reportes de
 
 ---
 
+## 🎓 Datos de la entrega
+
+| Dato                 | Información                                        |
+| -------------------- | -------------------------------------------------- |
+| **Estudiante**       | Carlos Andrés Núñez Vargas                         |
+| **Asignatura**       | Desarrollo Web — Unidad 1                           |
+| **Actividad**        | Servlets/JSP: introducción a la segunda generación del desarrollo de aplicaciones web |
+| **Ejercicio asignado** | N.º 19 — CarreraTaxi                             |
+| **Entidades**        | `Usuario` (entidad común) y `CarreraTaxi` (ejercicio 19) |
+| **Repositorio**      | https://github.com/cnunezv/taxiflow-webapp         |
+| **Video de sustentación** | _(pendiente: pegar aquí el enlace de YouTube o Vimeo)_ |
+| **Aplicación desplegada** | _(pendiente: pegar aquí la URL pública)_        |
+
+---
+
 ## ✨ Características
 
 | Módulo                | Descripción                                     |
@@ -130,6 +145,9 @@ taxiflow-webapp/
 │           ├── 📁 web/
 │           └── index.jsp
 │
+├── 📁 db/
+│   └── 🗃️ taxiflow_db.sql   ← script de creación + datos iniciales
+│
 ├── 📄 pom.xml
 ├── 📄 nb-configuration.xml
 └── 📄 README.md
@@ -180,31 +198,63 @@ cd taxiflow-webapp
 
 ### 2️⃣ Configurar MySQL
 
-Crear la base de datos:
+Ejecutar el script incluido en el repositorio. Crea la base de datos `taxiflow_db`,
+las tablas `usuarios` y `carreras_taxi`, y carga los datos iniciales de prueba:
 
-```sql
-CREATE DATABASE taxiflow;
+```bash
+mysql -u root -p < db/taxiflow_db.sql
 ```
 
-Configurar posteriormente las credenciales de conexión en:
+> También puede abrirse `db/taxiflow_db.sql` en MySQL Workbench y ejecutarlo completo.
+> El script es **no destructivo**: usa `IF NOT EXISTS` e `INSERT IGNORE`, así que puede
+> ejecutarse varias veces sin borrar información existente.
+
+Si tu MySQL usa otro usuario o contraseña, ajustar las credenciales en:
 
 ```text
 src/main/java/com/taxiflow/webapp/dao/ConexionBD.java
 ```
 
-Ejemplo:
-
 ```java
-String url = "jdbc:mysql://localhost:3306/taxiflow";
-String usuario = "root";
-String password = "TU_PASSWORD";
+private final String url = "jdbc:mysql://localhost:3306/taxiflow_db?serverTimezone=UTC&useSSL=false";
+private final String usuario = "root";
+private final String password = "";
 ```
 
+> ⚠️ El nombre de la base de datos debe ser **`taxiflow_db`**, tal como lo crea el script.
 > ⚠️ En ambientes de producción se recomienda utilizar variables de entorno para las credenciales.
+
+**Usuario de prueba para iniciar sesión:**
+
+| ID      | Contraseña   | Rol           |
+| ------- | ------------ | ------------- |
+| `admin` | `admin123`   | Administrador |
 
 ---
 
-### 3️⃣ Compilar
+### 3️⃣ Configurar el envío de correo
+
+La recuperación de clave usa el SMTP de Gmail. Las credenciales **no se versionan**
+(están en `.gitignore`), por lo que hay que crear manualmente el archivo:
+
+```text
+src/main/resources/mail.properties
+```
+
+Con este contenido:
+
+```properties
+mail.username=tucuenta@gmail.com
+mail.password=CONTRASENA_DE_APLICACION_DE_16_CARACTERES
+```
+
+> ⚠️ `mail.password` **no** es la contraseña normal de Gmail: es una
+> *contraseña de aplicación* generada con la verificación en dos pasos activada.
+> Sin este archivo la aplicación compila y funciona, pero la recuperación de clave falla.
+
+---
+
+### 4️⃣ Compilar
 
 ```bash
 mvn clean install
@@ -218,7 +268,7 @@ mvn clean package
 
 ---
 
-### 4️⃣ Ejecutar 🚀
+### 5️⃣ Ejecutar 🚀
 
 El proyecto genera un archivo:
 
@@ -290,9 +340,16 @@ Incluye:
 🔄 Recuperación de contraseña
 ```
 
-### 📈 Reportes
+### 📈 Reportes parametrizados
 
-El sistema incorpora funcionalidades orientadas a la consulta y generación de información relacionada con las operaciones registradas.
+La aplicación incluye **dos reportes parametrizados por cada entidad**:
+
+| Entidad         | Reporte                        | Parámetro                  | Dónde se accede                          |
+| --------------- | ------------------------------ | -------------------------- | --------------------------------------- |
+| **Usuario**     | Usuarios por rol/tipo          | `tipo`                     | Menú → Reportes de Usuarios             |
+| **Usuario**     | Usuarios por dominio de correo | `dominio` (ej. `taxiflow.com`) | Menú → Reportes de Usuarios         |
+| **CarreraTaxi** | Carreras por barrio de inicio  | `barrio`                   | Menú → Reportes de Carreras            |
+| **CarreraTaxi** | Carreras por precio mínimo     | `precioMinimo`             | Menú → Reportes de Carreras            |
 
 ---
 

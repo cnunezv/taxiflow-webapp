@@ -45,7 +45,7 @@ public class RecuperarClaveServlet extends HttpServlet {
 
             // Envía la contraseña actual por correo (recordatorio de clave)
             String asunto = "TaxiFlow - Recordatorio de contraseña";
-            String cuerpo = "Hola" + usuario.getNombre() + ", gran pendejo,\n\n"
+            String cuerpo = "Hola " + usuario.getNombre() + ",\n\n"
                     + "Tu contraseña actual en TaxiFlow es: " + usuario.getPassword() + "\n\n"
                     + "Si no solicitaste este correo, ignóralo.";
 

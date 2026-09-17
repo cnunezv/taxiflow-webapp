@@ -5,6 +5,13 @@
 --%>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+    // Control de acceso: si no hay sesión iniciada, se redirige al login.
+    if (session.getAttribute("usuario.login") == null) {
+        getServletContext().getRequestDispatcher("/web/usuario/login.jsp").forward(request, response);
+        return;
+    }
+%>
 <!DOCTYPE html>
 <html>
 <head>

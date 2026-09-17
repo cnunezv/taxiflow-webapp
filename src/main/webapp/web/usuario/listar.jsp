@@ -6,6 +6,13 @@
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="com.taxiflow.webapp.modelo.Usuario, java.util.List" %>
+<%
+    // Control de acceso: si no hay sesión iniciada, se redirige al login.
+    if (session.getAttribute("usuario.login") == null) {
+        getServletContext().getRequestDispatcher("/web/usuario/login.jsp").forward(request, response);
+        return;
+    }
+%>
 <!DOCTYPE html>
 <html>
 <head><title>Usuarios</title></head>
@@ -15,6 +22,7 @@
 
     <a href="${pageContext.request.contextPath}/web/usuario/agregar.jsp">+ Nuevo usuario</a> |
     <a href="${pageContext.request.contextPath}/web/usuario/buscar.jsp">Buscar por ID</a> |
+    <a href="${pageContext.request.contextPath}/usuarios?accion=reportes">Reportes</a> |
 <a href="${pageContext.request.contextPath}/index.jsp">Volver al menú</a>
     <table border="1" cellpadding="5">
         <tr>
