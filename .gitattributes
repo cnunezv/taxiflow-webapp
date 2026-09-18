@@ -1,0 +1,5 @@
+# Los archivos de texto se guardan con finales de linea LF dentro del repositorio.
+# Asi el mismo proyecto compila igual en Windows, en Linux y dentro de Docker.
+* text=auto
+Dockerfile text eol=lf
+*.sh text eol=lf

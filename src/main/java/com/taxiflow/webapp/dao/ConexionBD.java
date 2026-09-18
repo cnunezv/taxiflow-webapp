@@ -13,11 +13,23 @@ import java.sql.SQLException;
  */
 public class ConexionBD {
 
-    // Datos de conexión. Ajusta usuario/clave si tu MySQL local es distinto.
-    private final String driver = "com.mysql.cj.jdbc.Driver"; // driver moderno (Connector/J 8+)
-    private final String url = "jdbc:mysql://localhost:3306/taxiflow_db?serverTimezone=UTC&useSSL=false";
-    private final String usuario = "root";
-    private final String password = "";
+    // -----------------------------------------------------------------
+    // Datos de conexión.
+    // En la nube (Render) se leen de variables de entorno; si no existen,
+    // se usan los valores locales de desarrollo (MySQL en localhost).
+    // -----------------------------------------------------------------
+    private static final String DRIVER = "com.mysql.cj.jdbc.Driver"; // Connector/J 8+
+
+    /** Lee una variable de entorno; si está vacía o no existe, devuelve el valor por defecto. */
+    private static String env(String clave, String porDefecto) {
+        String valor = System.getenv(clave);
+        return (valor == null || valor.trim().isEmpty()) ? porDefecto : valor;
+    }
+
+    private final String url = env("DB_URL",
+            "jdbc:mysql://localhost:3306/taxiflow_db?serverTimezone=UTC&useSSL=false");
+    private final String usuario = env("DB_USER", "root");
+    private final String password = env("DB_PASSWORD", "");
 
     private Connection conexion;
 
@@ -33,7 +45,7 @@ public class ConexionBD {
      */
     public void conectar() throws Exception {
         try {
-            Class.forName(driver); // carga la clase del driver en memoria
+            Class.forName(DRIVER); // carga la clase del driver en memoria
         } catch (ClassNotFoundException ex) {
             throw new Exception("No se encontró el driver de MySQL: " + ex.getMessage());
         }

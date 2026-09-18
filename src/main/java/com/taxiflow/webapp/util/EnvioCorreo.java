@@ -20,16 +20,29 @@ import javax.mail.internet.MimeMessage;
  */
 public class EnvioCorreo {
 
-    /** Carga usuario y contraseña de aplicación desde el classpath (src/main/resources/mail.properties). */
+    /**
+     * Devuelve el valor de una variable de entorno, o null si no está definida.
+     * En Render las credenciales se configuran como variables de entorno
+     * (MAIL_USERNAME y MAIL_PASSWORD), nunca dentro del repositorio.
+     */
+    private static String env(String clave) {
+        String valor = System.getenv(clave);
+        return (valor == null || valor.trim().isEmpty()) ? null : valor;
+    }
+
+    /**
+     * Carga usuario y contraseña de aplicación desde el classpath
+     * (src/main/resources/mail.properties). Solo se usa en desarrollo local:
+     * ese archivo está en .gitignore y no viaja al repositorio.
+     * Devuelve un Properties vacío si el archivo no existe.
+     */
     private static Properties cargarCredenciales() throws IOException {
         Properties props = new Properties();
         try (InputStream in = EnvioCorreo.class.getClassLoader()
                 .getResourceAsStream("mail.properties")) {
-            if (in == null) {
-                throw new IOException("No se encontró mail.properties en el classpath. "
-                        + "Verifica que esté en src/main/resources/mail.properties");
+            if (in != null) {
+                props.load(in);
             }
-            props.load(in);
         }
         return props;
     }
@@ -41,12 +54,18 @@ public class EnvioCorreo {
      * @param cuerpo contenido del mensaje
      */
     public static void enviarCorreo(String destinatario, String asunto, String cuerpo) throws Exception {
+        // 1) Primero variables de entorno (producción en Render).
+        // 2) Si no existen, mail.properties del classpath (desarrollo local).
         Properties credenciales = cargarCredenciales();
-        final String usuarioGmail = credenciales.getProperty("mail.username");
-        final String claveApp = credenciales.getProperty("mail.password");
+        final String usuarioGmail = env("MAIL_USERNAME") != null
+                ? env("MAIL_USERNAME") : credenciales.getProperty("mail.username");
+        final String claveApp = env("MAIL_PASSWORD") != null
+                ? env("MAIL_PASSWORD") : credenciales.getProperty("mail.password");
 
         if (usuarioGmail == null || claveApp == null) {
-            throw new IOException("mail.properties debe tener mail.username y mail.password definidos");
+            throw new IOException("Faltan credenciales de correo. Define las variables de entorno "
+                    + "MAIL_USERNAME y MAIL_PASSWORD, o crea src/main/resources/mail.properties "
+                    + "con mail.username y mail.password.");
         }
 
         // Configuración del servidor SMTP de Gmail con TLS
