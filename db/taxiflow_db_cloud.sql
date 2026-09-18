@@ -3,19 +3,23 @@
 --  Autor      : Carlos Andres Nunez Vargas
 --
 --  Diferencia con db/taxiflow_db.sql:
---  aqui NO se ejecuta CREATE DATABASE ni USE, porque en Aiven la base
---  de datos ya viene creada (se llama 'defaultdb') y el usuario del plan
---  gratuito no tiene permiso para crear otras.
+--  aqui NO se ejecuta CREATE DATABASE, porque la base 'taxiflow_db' se
+--  crea desde la consola de Aiven (Connect -> Databases -> Create database).
 --
 --  Como ejecutarlo:
---    1) Consola de Aiven -> tu servicio MySQL -> pestana "Query editor",
---       pegar este contenido y ejecutar.
---    2) O desde tu PC:
---       mysql --host=<HOST> --port=<PUERTO> --user=avnadmin --password \
---             --ssl-mode=REQUIRED defaultdb < db/taxiflow_db_cloud.sql
+--    a) MySQL Workbench conectado al servidor de Aiven (SSL = Require):
+--       File -> Open SQL Script -> este archivo -> boton del rayo.
+--    b) O desde la terminal:
+--       mysql --host=<HOST> --port=<PUERTO> --user=avnadmin \
+--             --password=<CLAVE> --ssl-mode=REQUIRED \
+--             taxiflow_db < db/taxiflow_db_cloud.sql
 --
 --  El script es NO DESTRUCTIVO: usa IF NOT EXISTS e INSERT IGNORE.
 -- =====================================================================
+
+-- Selecciona la base de datos creada en Aiven.
+-- Si la llamaste de otra forma, cambia el nombre en esta linea.
+USE taxiflow_db;
 
 -- ---------------------------------------------------------------------
 -- 1. Tabla usuarios (entidad comun exigida por la actividad)

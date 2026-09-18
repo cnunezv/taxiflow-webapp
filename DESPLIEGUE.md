@@ -26,7 +26,7 @@ Estos archivos ya están listos y commiteados en el repositorio:
 | `Dockerfile` | Receta en dos etapas: Maven 3.9 + JDK 17 compila el `.war`, y Tomcat 9 lo publica como `ROOT.war`. |
 | `.dockerignore` | Evita enviar `target/`, `.git/` y los documentos Word/PDF al construir la imagen. |
 | `.gitattributes` | Normaliza los finales de línea a LF para que el proyecto compile igual en Windows y en Linux. |
-| `db/taxiflow_db_cloud.sql` | El mismo esquema y datos, pero **sin** `CREATE DATABASE` ni `USE` (en Aiven la base ya viene creada). |
+| `db/taxiflow_db_cloud.sql` | El mismo esquema y datos, pero **sin** `CREATE DATABASE` (la base se crea desde la consola de Aiven). |
 | `ConexionBD.java` (modificado) | Lee `DB_URL`, `DB_USER` y `DB_PASSWORD` del entorno. Si no existen, usa los valores de siempre en `localhost` → **tu proyecto local sigue funcionando igual**. |
 | `EnvioCorreo.java` (modificado) | Lee `MAIL_USERNAME` y `MAIL_PASSWORD` del entorno; si no están, usa `mail.properties` como antes. |
 
@@ -74,34 +74,48 @@ Verifica en <https://github.com/cnunezv/taxiflow-webapp> que aparezcan el
    | Port | `12345` (no es 3306) |
    | User | `avnadmin` |
    | Password | (se ve con el botón del ojo) |
-   | Database name | `defaultdb` |
+   | Database name | `taxiflow_db` (la creas tú en *Connect → Databases → Create database*) |
 
 > Guarda esa contraseña en un lugar seguro. **Nunca** la escribas dentro de un
 > archivo del repositorio: va a ir en las variables de entorno de Render.
 
 ---
 
-## Paso 3 · Crear las tablas y los datos de prueba
+## Paso 3 · Crear la base y cargar las tablas
 
-En la consola de Aiven, dentro de tu servicio, abre la pestaña **Query editor**.
+**3.1 Crear la base de datos.** En la consola de Aiven, menú izquierdo
+**Connect → Databases → Create database**, y llámala `taxiflow_db`.
 
-1. Abre el archivo `db/taxiflow_db_cloud.sql` de tu proyecto.
-2. Copia **todo** su contenido y pégalo en el editor.
-3. Pulsa **Run**.
-4. Comprueba que quedó bien ejecutando:
+**3.2 Cargar el esquema con MySQL Workbench** (el mismo que usas en local):
+
+1. Workbench → botón **+** junto a *MySQL Connections*.
+2. Rellena con los datos del Paso 2:
+   - *Connection Name:* `Aiven TaxiFlow`
+   - *Hostname:* el host de Aiven · *Port:* el puerto de Aiven (**no** 3306)
+   - *Username:* `avnadmin`
+   - *Password:* **Store in Vault…** y pega la clave
+3. Pestaña **SSL** → *Use SSL:* **Require**.
+4. **Test Connection** → debe decir *Successfully made the MySQL connection*. → **OK**.
+5. Abre la conexión → menú **File → Open SQL Script…** → elige
+   `db/taxiflow_db_cloud.sql` de tu proyecto.
+6. Ejecuta con el botón del **rayo** ⚡. El script empieza con
+   `USE taxiflow_db;`, así que no hace falta seleccionar el esquema a mano.
+
+**3.3 Verificar.** En una pestaña nueva de consulta:
 
 ```sql
+USE taxiflow_db;
 SELECT COUNT(*) AS total_usuarios FROM usuarios;
 SELECT COUNT(*) AS total_carreras FROM carreras_taxi;
 ```
 
 Deben devolver **6** y **10**.
 
-*Alternativa desde tu PC* (si tienes el cliente `mysql` instalado):
+*Alternativa desde la terminal* (si tienes el cliente `mysql` instalado):
 
 ```bash
-mysql --host=TU_HOST --port=TU_PUERTO --user=avnadmin --password \
-      --ssl-mode=REQUIRED defaultdb < db/taxiflow_db_cloud.sql
+mysql --host=TU_HOST --port=TU_PUERTO --user=avnadmin --password=TU_CLAVE \
+      --ssl-mode=REQUIRED taxiflow_db < db/taxiflow_db_cloud.sql
 ```
 
 ---
@@ -129,7 +143,7 @@ mysql --host=TU_HOST --port=TU_PUERTO --user=avnadmin --password \
 
    | Key | Value |
    |---|---|
-   | `DB_URL` | `jdbc:mysql://TU_HOST:TU_PUERTO/defaultdb?sslMode=REQUIRED&serverTimezone=UTC` |
+   | `DB_URL` | `jdbc:mysql://TU_HOST:TU_PUERTO/taxiflow_db?sslMode=REQUIRED&serverTimezone=UTC` |
    | `DB_USER` | `avnadmin` |
    | `DB_PASSWORD` | *(la contraseña de Aiven)* |
 
@@ -193,9 +207,9 @@ dispara un despliegue automático**. No hay que volver a configurar nada.
 |---|---|
 | La primera visita tarda ~1 minuto | Normal. El plan Free de Render apaga el servicio tras 15 minutos sin tráfico y lo enciende con la siguiente petición. |
 | `Port scan timeout reached, no open ports detected` | Render no detectó el puerto. Verifica que no creaste una variable `PORT` con un valor distinto y que el `Dockerfile` conserva la línea `CMD sed -i ...`. |
-| `Error al conectar con la base de datos: Communications link failure` | Revisa `DB_URL`: el puerto de Aiven **no** es 3306, y debe terminar en `/defaultdb?sslMode=REQUIRED&serverTimezone=UTC`. |
+| `Error al conectar con la base de datos: Communications link failure` | Revisa `DB_URL`: el puerto de Aiven **no** es 3306, y debe terminar en `/taxiflow_db?sslMode=REQUIRED&serverTimezone=UTC`. |
 | `Access denied for user 'avnadmin'` | Contraseña mal copiada en `DB_PASSWORD` (cuidado con espacios al pegar). |
-| `Table 'defaultdb.usuarios' doesn't exist` | Falta ejecutar el Paso 3. |
+| `Table 'taxiflow_db.usuarios' doesn't exist` | Falta ejecutar el Paso 3. |
 | `HTTP 404` al entrar | El WAR no se copió como `ROOT.war`. Revisa los logs de construcción. |
 | El envío de correo falla | Faltan `MAIL_USERNAME` / `MAIL_PASSWORD`, o Gmail requiere una *contraseña de aplicación* (no la clave normal de la cuenta). |
 
