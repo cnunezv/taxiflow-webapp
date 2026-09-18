@@ -387,26 +387,6 @@ Para una futura versión productiva se recomienda incorporar:
 
 ---
 
-## 📸 Screenshots
-
-> 💡 Puedes agregar aquí capturas de las principales pantallas de TaxiFlow.
-
-```text
-📸 Login
-📸 Dashboard
-📸 Gestión de usuarios
-📸 Registro de carreras
-📸 Reportes
-```
-
-Ejemplo:
-
-```markdown
-![Login TaxiFlow](docs/screenshots/login.png)
-```
-
----
-
 ## 📌 Estado del proyecto
 
 🚧 **En desarrollo**
