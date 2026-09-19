@@ -15,7 +15,7 @@ import javax.mail.internet.MimeMessage;
  * Utilidad para el envío de correos de recuperación de clave vía Gmail SMTP.
  * Lee las credenciales desde mail.properties (fuera del control de versiones,
  * ver .gitignore) para no exponer la contraseña de aplicación en el repo público.
- *
+ * Los correo se envian son exito
  * @author CarlosN
  */
 public class EnvioCorreo {
